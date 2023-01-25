@@ -67,19 +67,21 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
   // TODO: implement
   sum.data[0] = left.data[0] + right.data[0];
-  // If statement is true, addition overflows
+  sum.data[1] = left.data[1] + right.data[1];
   if (sum.data[0] < left.data[0]) {
     sum.data[1] += 1U;
   }
-  sum.data[1] = left.data[1] + right.data[1];
+  sum.data[2] = left.data[2] + right.data[2];
   if (sum.data[1] < left.data[1]) {
     sum.data[2] += 1U;
+    if (sum.data[2] < left.data[2]) {
+      sum.data[3] += 1U;
+    }
   }
-  sum.data[2] = left.data[2] + right.data[2];
+  sum.data[3] = left.data[3] + right.data[3];
   if (sum.data[2] < left.data[2]) {
     sum.data[3] += 1U;
   }
-  sum.data[3] = left.data[3] + right.data[3];
   if (sum.data[3] < left.data[3]) {
     sum.data[0] = 0U;
     sum.data[1] = 0U;
@@ -93,6 +95,12 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
 UInt256 uint256_sub(UInt256 left, UInt256 right) {
   UInt256 result;
   // TODO: implement
+  for (int i = 0; i < 4; i++) {
+    right.data[i] = ~right.data[i];
+  }
+  right = uint256_add(right, uint256_create_from_u64(1U));
+  result = uint256_add(left, right);
+
   return result;
 }
 
