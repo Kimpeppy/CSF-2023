@@ -66,27 +66,24 @@ uint64_t uint256_get_bits(UInt256 val, unsigned index) {
 UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
   // TODO: implement
-  sum.data[0] = left.data[0] + right.data[0];
-  sum.data[1] = left.data[1] + right.data[1];
-  if (sum.data[0] < left.data[0]) {
-    sum.data[1] += 1U;
-  }
-  sum.data[2] = left.data[2] + right.data[2];
-  if (sum.data[1] < left.data[1]) {
-    sum.data[2] += 1U;
-    if (sum.data[2] < left.data[2]) {
-      sum.data[3] += 1U;
+  sum.data[0] = 0U;
+  sum.data[1] = 0U;
+  sum.data[2] = 0U;
+  sum.data[3] = 0U;
+
+  uint64_t carry = 0U;
+  
+  for (int i = 0; i < 4; i++) {
+    sum.data[i] = left.data[i] + right.data[i] + carry;
+    for (int j = i; j < 3; j++) {
+      if (sum.data[j] < left.data[j]) {
+        carry = 1U;
+      }
+      else {
+        carry = 0U;
+        break;
+      }
     }
-  }
-  sum.data[3] = left.data[3] + right.data[3];
-  if (sum.data[2] < left.data[2]) {
-    sum.data[3] += 1U;
-  }
-  if (sum.data[3] < left.data[3]) {
-    sum.data[0] = 0U;
-    sum.data[1] = 0U;
-    sum.data[2] = 0U;
-    sum.data[3] = 0U;
   }
   return sum;
 }
