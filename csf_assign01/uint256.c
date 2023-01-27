@@ -1,8 +1,8 @@
 /*
  * String functions for multithreaded client/server calculator program
  * CSF Assignment 1
- * Michael Kim
- * mkim225@jh.edu
+ * Michael Kim, Afaf Saqib Qureshi
+ * mkim225@jh.edu, asaqibq1@jhu.edu
  */
 #include <assert.h>
 #include <string.h>
@@ -86,6 +86,11 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   for (int i = 0; i < 4; i++) {
     // You add left data + right data
     sum.data[i] = left.data[i] + right.data[i] + carry.data[i];
+
+    // Check if left and right overflows
+    // If it overflow set the carry flag
+    // After that if statement, the carry to the sum
+    // If it overflow set the carry flag
     for (int j = i; j < 3; j++) {
       if (sum.data[j] < left.data[j]) {
         carry.data[j + 1] = 1U;
