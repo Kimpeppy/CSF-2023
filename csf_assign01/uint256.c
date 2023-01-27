@@ -40,6 +40,13 @@ UInt256 uint256_create(const uint64_t data[4]) {
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   // TODO: implement
+  // We need to take the substring of the rightmost 64 characters.
+  int length = strlen(hex);
+
+  if (length > 64) {
+    // If here, we need the substring
+    
+  }
   return result;
 }
 
