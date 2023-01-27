@@ -35,6 +35,8 @@ void test_add_max(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
+void test_sub_0(TestObjs *objs);
+void test_sub_negative(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
 
@@ -58,6 +60,8 @@ int main(int argc, char **argv) {
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
+  TEST(test_sub_0);
+  TEST(test_sub_negative);
   TEST(test_mul_1);
   TEST(test_mul_2);
 
@@ -312,6 +316,40 @@ void test_sub_3(TestObjs *objs) {
   ASSERT(0x0e4243bc3913ceafUL == result.data[1]);
   ASSERT(0xef77ed83d884f494UL == result.data[2]);
   ASSERT(0x4a4b72ebb654226UL == result.data[3]);
+}
+
+void test_sub_0(TestObjs *objs) {
+  UInt256 left, right, result;
+
+  left = uint256_create_from_u64(1UL);
+  right = uint256_create_from_u64(0UL);
+
+  result = uint256_sub(left, right);
+
+  ASSERT(0UL == result.data[3]);
+  ASSERT(0UL == result.data[2]);
+  ASSERT(0UL == result.data[1]);
+  ASSERT(1UL == result.data[0]);
+
+
+}
+
+void test_sub_negative(TestObjs *objs) {
+  // Negative subtraction tests
+  UInt256 left, right, result;
+
+  left = uint256_create_from_u64(0UL);
+  right = uint256_create_from_u64(1UL);
+
+  UInt256 max;
+  for (int i = 0; i < 4; ++i) { max.data[i] = ~(0UL); }
+
+  result = uint256_sub(left, right);
+
+  ASSERT(max.data[0] == result.data[0]);
+  ASSERT(max.data[1] == result.data[1]);
+  ASSERT(max.data[2] == result.data[2]);
+  ASSERT(max.data[3] == result.data[3]);
 }
 
 void test_mul_1(TestObjs *objs) {
