@@ -36,6 +36,7 @@ UInt256 uint256_create(const uint64_t data[4]) {
   return result;
 }
 
+// Afaf TODO:
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
@@ -45,11 +46,12 @@ UInt256 uint256_create_from_hex(const char *hex) {
 
   if (length > 64) {
     // If here, we need the substring
-    
+
   }
   return result;
 }
 
+// Michael TODO:
 // Return a dynamically-allocated string of hex digits representing the
 // given UInt256 value.
 char *uint256_format_as_hex(UInt256 val) {
@@ -80,7 +82,9 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
 
   UInt256 carry = uint256_create_from_u64(0U);
   
+  
   for (int i = 0; i < 4; i++) {
+    // You add left data + right data
     sum.data[i] = left.data[i] + right.data[i] + carry.data[i];
     for (int j = i; j < 3; j++) {
       if (sum.data[j] < left.data[j]) {
