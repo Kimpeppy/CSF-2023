@@ -71,19 +71,21 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   sum.data[2] = 0U;
   sum.data[3] = 0U;
 
-  uint64_t carry = 0U;
+  UInt256 carry = uint256_create_from_u64(0U);
   
   for (int i = 0; i < 4; i++) {
-    sum.data[i] = left.data[i] + right.data[i] + carry;
+    sum.data[i] = left.data[i] + right.data[i] + carry.data[i];
     for (int j = i; j < 3; j++) {
       if (sum.data[j] < left.data[j]) {
-        carry = 1U;
+        carry.data[j + 1] = 1U;
+        continue;
       }
       else {
-        carry = 0U;
+        carry.data[j + 1] = 0U;
         break;
       }
     }
+
   }
   return sum;
 }
@@ -105,5 +107,11 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
 UInt256 uint256_mul(UInt256 left, UInt256 right) {
   UInt256 product;
   // TODO: implement
+  product.data[0] = 0U;
+  product.data[1] = 0U;
+  product.data[2] = 0U;
+  product.data[3] = 0U;
+
+  
   return product;
 }

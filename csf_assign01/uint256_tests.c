@@ -30,6 +30,8 @@ void test_format_as_hex(TestObjs *objs);
 void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
+void test_add_0(TestObjs *objs);
+void test_add_max(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
@@ -51,6 +53,8 @@ int main(int argc, char **argv) {
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
+  TEST(test_add_0);
+  TEST(test_add_max);
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
@@ -216,6 +220,40 @@ void test_add_3(TestObjs *objs) {
   ASSERT(0xd985258eaaa18478UL == result.data[1]);
   ASSERT(0xc7aa07a5c1cba880UL == result.data[2]);
   ASSERT(0xac5151273cfcf2eUL == result.data[3]);
+}
+
+void test_add_0(TestObjs *objs) {
+  // "zero" addition tests
+  (void) objs;
+  UInt256 left, right, result, sum;
+
+  // Test adding 0 to one;
+  sum = uint256_add(objs->one, objs->zero);
+
+  ASSERT(0UL == sum.data[3]);
+  ASSERT(0UL == sum.data[2]);
+  ASSERT(0UL == sum.data[1]);
+  ASSERT(1UL == sum.data[0]);
+
+}
+
+void test_add_max(TestObjs *objs) {
+  // "Overflow" addition test
+  (void) objs;
+  UInt256 left, right, result;
+
+  UInt256 max;
+  for (int i = 0; i < 4; ++i) { max.data[i] = ~(0UL); }
+
+  UInt256 one = uint256_create_from_u64(1UL);
+
+  UInt256 sum = uint256_add(max, one);
+
+  // these assertions should succeed
+  ASSERT(sum.data[3] == 0UL);
+  ASSERT(sum.data[2] == 0UL);
+  ASSERT(sum.data[1] == 0UL);
+  ASSERT(sum.data[0] == 0UL);
 }
 
 void test_sub_1(TestObjs *objs) {
