@@ -80,27 +80,43 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   sum.data[2] = 0U;
   sum.data[3] = 0U;
 
-  UInt256 carry = uint256_create_from_u64(0U);
+  uint64_t carry = 0U;
   
   
   for (int i = 0; i < 4; i++) {
     // You add left data + right data
-    sum.data[i] = left.data[i] + right.data[i] + carry.data[i];
+    sum.data[i] = left.data[i] + right.data[i];
 
     // Check if left and right overflows
     // If it overflow set the carry flag
     // After that if statement, the carry to the sum
     // If it overflow set the carry flag
-    for (int j = i; j < 3; j++) {
-      if (sum.data[j] < left.data[j]) {
-        carry.data[j + 1] = 1U;
-        continue;
+    
+    if (sum.data[i] < left.data[i]) {
+      sum.data[i]+= carry;
+      carry = 1U;
+      continue;
+    }
+
+    else {
+      sum.data[i] += carry;
+      if (sum.data[i] < carry) {
+        carry = 1U;
       }
       else {
-        carry.data[j + 1] = 0U;
-        break;
+        carry = 0U;
       }
     }
+
+    
+    // sum.data[i] += carry;
+    
+    // if (sum.data[i] < carry) {
+    //   carry = 1U;
+    // }
+    // else {
+    //   carry = 0U;
+    // }
 
   }
   return sum;
@@ -130,4 +146,34 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
 
   
   return product;
+}
+
+// 1-256
+// bitwise operations left shift and and operation
+// 101 & 100 = 1 if 
+int uint256_bit_is_set(UInt256 val, unsigned index) {
+  uint64_t data;
+  if (index >= 0 || index < 64) {
+    data = val.data[0];
+  }
+  else if (index >= 64 || index < 128) {
+    data = val.data[1];
+  }
+  else if (index >= 128 || index < 192) {
+    data = val.data[2];
+  } 
+  else {
+    data = val.data[3];
+  }
+  unsigned newIndex = index % 64;
+  if ((data >> newIndex) & 1) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
+UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
+
 }
