@@ -42,21 +42,27 @@ UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   uint64_t chunk;
 
+  for (int i = 0; i < 4; i++) {
+    result.data[i] = 0UL;
+  }
+
   // We need to take the substring of the rightmost 64 characters.
   int length = strlen(hex);
-  char* sixteen_char;
+  char* sixteen_char = malloc(sizeof(char) * 17);
   
-  for (int i = 0; i < 4; i++) {
-    if ((length/16) != 0) {
-      memcpy(sixteen_char, hex, 16);
+  for (int i = 0; i < 4; i--) {
+    if (length > 16) {
+      strncpy(sixteen_char, hex + (length - 16), 16);
       chunk = strtoul(sixteen_char, NULL, 16);
       result.data[i] = chunk;
       length = length - 16;
     }
     else {
-    // If here, we need the substring
-     chunk = strtoul(sixteen_char, NULL, length);
-     result.data[i] = chunk;
+      // If here, we need the substring
+      strncpy(sixteen_char, hex, length);
+      chunk = strtoul(sixteen_char, NULL, 16);
+      result.data[i] = chunk;
+      break;
     }
   }
   
@@ -99,7 +105,7 @@ char *uint256_format_as_hex(UInt256 val) {
       sprintf(buf, "%016lx", data);
       buf = buf + 16;
     }
-    // Add the buf to the concatnateexit
+    // Add the buf to the concatnate exit
     strcat(hex, buf);
     i--;
     
