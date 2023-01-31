@@ -40,22 +40,27 @@ UInt256 uint256_create(const uint64_t data[4]) {
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
-  // TODO: implement
+  uint64_t chunk;
+
   // We need to take the substring of the rightmost 64 characters.
   int length = strlen(hex);
   char* sixteen_char;
   
-  for (int i = 0; ) {
-   if (length > 64) {
+  for (int i = 0; i < 4; i++) {
+    if ((length/16) != 0) {
+      memcpy(sixteen_char, hex, 16);
+      chunk = strtoul(sixteen_char, NULL, 16);
+      result.data[i] = chunk;
+      length = length - 16;
+    }
+    else {
     // If here, we need the substring
-    int curr_position = length - 16;
-    memcpy(sixteen_char, hex, 16);
-
-    result = strtoul(sixteen_char , NULL, 16);
-   }
+     chunk = strtoul(sixteen_char, NULL, length);
+     result.data[i] = chunk;
+    }
   }
-
-   return result;
+  
+  return result;
   }
  
 // Michael TODO:
