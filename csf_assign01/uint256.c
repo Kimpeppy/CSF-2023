@@ -43,14 +43,21 @@ UInt256 uint256_create_from_hex(const char *hex) {
   // TODO: implement
   // We need to take the substring of the rightmost 64 characters.
   int length = strlen(hex);
-
-  if (length > 64) {
+  char* sixteen_char;
+  
+  for (int i = 0; ) {
+   if (length > 64) {
     // If here, we need the substring
+    int curr_position = length - 16;
+    memcpy(sixteen_char, hex, 16);
 
+    result = strtoul(sixteen_char , NULL, 16);
+   }
   }
-  return result;
-}
 
+   return result;
+  }
+ 
 // Michael TODO:
 // Return a dynamically-allocated string of hex digits representing the
 // given UInt256 value.
@@ -93,7 +100,6 @@ char *uint256_format_as_hex(UInt256 val) {
     
   }
   
-
   return hex;
 }
 
