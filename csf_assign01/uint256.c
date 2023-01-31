@@ -57,6 +57,43 @@ UInt256 uint256_create_from_hex(const char *hex) {
 char *uint256_format_as_hex(UInt256 val) {
   char *hex = NULL;
   // TODO: implement
+  char *buf = NULL;
+
+  hex = malloc(sizeof(char) * 65);
+  buf = malloc(sizeof(char) * 17);
+
+  int i = 3;
+
+  // If this is active, there is leading zeros
+  int zeroFlag = 1;
+
+  while (i >= 0) {
+    uint64_t data = val.data[i];
+    // We need to check if data is a zero and the zeroflag is activated
+    if (data == 0U && zeroFlag) {
+      // Do nothing
+      i--;
+      continue;
+    }
+    else if (data > 0U && zeroFlag) {
+      // There won't be any leading zeros anymore but we need to 
+      // sprintf without leading zeros
+      zeroFlag = 0;
+      sprintf(buf, "%lx", data);
+      buf = buf + 16;
+    }
+    else if (!zeroFlag) {
+      // We can just print it normally since the zeroflag is deactivated
+      sprintf(buf, "%016lx", data);
+      buf = buf + 16;
+    }
+    // Add the buf to the concatnateexit
+    strcat(hex, buf);
+    i--;
+    
+  }
+  
+
   return hex;
 }
 
