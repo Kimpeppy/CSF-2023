@@ -78,6 +78,7 @@ char *uint256_format_as_hex(UInt256 val) {
   char *buf = NULL;
 
   hex = malloc(sizeof(char) * 65);
+  hex[0] = "\0";
   buf = malloc(sizeof(char) * 17);
 
   int i = 3;
@@ -88,7 +89,11 @@ char *uint256_format_as_hex(UInt256 val) {
   while (i >= 0) {
     uint64_t data = val.data[i];
     // We need to check if data is a zero and the zeroflag is activated
-    if (data == 0U && zeroFlag) {
+    if (i == 0 && zeroFlag && val.data[i] == 0U) {
+      char temp[1] = "0";
+      strcpy(hex, temp);
+    }
+    else if (data == 0U && zeroFlag) {
       // Do nothing
       i--;
       continue;
@@ -97,16 +102,15 @@ char *uint256_format_as_hex(UInt256 val) {
       // There won't be any leading zeros anymore but we need to 
       // sprintf without leading zeros
       zeroFlag = 0;
-      sprintf(buf, "%lx", data);
-      buf = buf + 16;
+      sprintf(hex, "%lx", data);
+      
     }
     else if (!zeroFlag) {
       // We can just print it normally since the zeroflag is deactivated
       sprintf(buf, "%016lx", data);
-      buf = buf + 16;
+      strcat(hex, buf);
     }
     // Add the buf to the concatnate exit
-    strcat(hex, buf);
     i--;
     
   }
