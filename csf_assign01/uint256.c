@@ -197,10 +197,22 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
 UInt256 uint256_mul(UInt256 left, UInt256 right) {
   UInt256 product;
   // TODO: implement
+  // TODO: implement
   product.data[0] = 0U;
   product.data[1] = 0U;
   product.data[2] = 0U;
   product.data[3] = 0U;
+  // TODO: 
+  // Do a for loop that goes over every bit on the left UInt256
+  // Shift b amount of bit by a
+  // Add the new shift value to the product
+  
+  for (int i = 0; i < 255; i++) {
+    if (uint256_bit_is_set(left, i)) {
+      uint256_leftshift(right, i);
+      uint256_add(left, right);
+    }
+  }
 
   
   return product;
@@ -233,5 +245,24 @@ int uint256_bit_is_set(UInt256 val, unsigned index) {
 }
 
 UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
+  int i = 0;
+  unsigned numToShift = shift;
+  unsigned bitmask = 0;
+  while (i < 4) {
+    uint64_t temp = val.data[i];
+    // Shift the val.data
+    val.data[i] << shift;
+    // Apply the bitmask from before
+    val.data[i] | bitmask;
+    // Now we need to get the bitmask for the next sig value
+    if (numToShift < 64) {
+      temp >> numToShift;
+      bitmask = temp & 63;
+    }
+    else {
+      bitmask = 0;
+    }
 
+    i++;
+  }
 }
