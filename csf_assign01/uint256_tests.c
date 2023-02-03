@@ -384,3 +384,7 @@ void test_mul_2(TestObjs *objs) {
   ASSERT(0x61abad710163aa9bUL == result.data[2]);
   ASSERT(0x991f2125eacd3UL == result.data[3]);
 }
+
+void test_bit_is_set() {
+
+}

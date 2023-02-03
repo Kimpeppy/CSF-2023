@@ -15,7 +15,7 @@
 // all other bits are set to 0.
 UInt256 uint256_create_from_u64(uint64_t val) {
   UInt256 result;
-  // TODO: implement
+  
   result.data[0] = val;
   result.data[1] = 0U;
   result.data[2] = 0U;
@@ -28,7 +28,7 @@ UInt256 uint256_create_from_u64(uint64_t val) {
 // at index 3 is the most significant.
 UInt256 uint256_create(const uint64_t data[4]) {
   UInt256 result;
-  // TODO: implement
+  
   result.data[0] = data[0];
   result.data[1] = data[1];
   result.data[2] = data[2];
@@ -74,7 +74,6 @@ UInt256 uint256_create_from_hex(const char *hex) {
 // given UInt256 value.
 char *uint256_format_as_hex(UInt256 val) {
   char *hex = NULL;
-  // TODO: implement
   char *buf = NULL;
 
   hex = malloc(sizeof(char) * 65);
@@ -111,8 +110,7 @@ char *uint256_format_as_hex(UInt256 val) {
       strcat(hex, buf);
     }
     // Add the buf to the concatnate exit
-    i--;
-    
+    i--; 
   }
   
   return hex;
@@ -123,7 +121,7 @@ char *uint256_format_as_hex(UInt256 val) {
 // significant 64 bits.
 uint64_t uint256_get_bits(UInt256 val, unsigned index) {
   uint64_t bits;
-  // TODO: implement
+  
   bits = val.data[index];
   return bits;
   
@@ -132,7 +130,7 @@ uint64_t uint256_get_bits(UInt256 val, unsigned index) {
 // Compute the sum of two UInt256 values.
 UInt256 uint256_add(UInt256 left, UInt256 right) {
   UInt256 sum;
-  // TODO: implement
+
   sum.data[0] = 0U;
   sum.data[1] = 0U;
   sum.data[2] = 0U;
@@ -165,17 +163,6 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
         carry = 0U;
       }
     }
-
-    
-    // sum.data[i] += carry;
-    
-    // if (sum.data[i] < carry) {
-    //   carry = 1U;
-    // }
-    // else {
-    //   carry = 0U;
-    // }
-
   }
   return sum;
 }
@@ -183,7 +170,7 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
 // Compute the difference of two UInt256 values.
 UInt256 uint256_sub(UInt256 left, UInt256 right) {
   UInt256 result;
-  // TODO: implement
+  
   for (int i = 0; i < 4; i++) {
     right.data[i] = ~right.data[i];
   }
@@ -196,25 +183,22 @@ UInt256 uint256_sub(UInt256 left, UInt256 right) {
 // Compute the product of two UInt256 values.
 UInt256 uint256_mul(UInt256 left, UInt256 right) {
   UInt256 product;
-  // TODO: implement
-  // TODO: implement
+
   product.data[0] = 0U;
   product.data[1] = 0U;
   product.data[2] = 0U;
   product.data[3] = 0U;
-  // TODO: 
+
   // Do a for loop that goes over every bit on the left UInt256
   // Shift b amount of bit by a
   // Add the new shift value to the product
-  
-  for (int i = 0; i < 255; i++) {
+  for (int i = 0; i < 256; i++) {
     if (uint256_bit_is_set(left, i)) {
       uint256_leftshift(right, i);
       uint256_add(left, right);
     }
   }
-
-  
+ 
   return product;
 }
 
@@ -248,21 +232,22 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
   int i = 0;
   unsigned numToShift = shift;
   unsigned bitmask = 0;
+  if (shift == 0) {
+    return val;
+  }
   while (i < 4) {
     uint64_t temp = val.data[i];
-    // Shift the val.data
-    val.data[i] << shift;
-    // Apply the bitmask from before
-    val.data[i] | bitmask;
-    // Now we need to get the bitmask for the next sig value
-    if (numToShift < 64) {
-      temp >> numToShift;
-      bitmask = temp & 63;
+    if (numToShift >= 64) {
+      val.data[i] = val.data[i] >> 64;
+      numToShift -= 64;
     }
     else {
-      bitmask = 0;
+      val.data[i] = val.data[i] << numToShift;
+      val.data[i] = val.data[i] | bitmask;
+      temp >> 64 - numToShift;
+      bitmask = temp & 63;
     }
-
     i++;
   }
+  return val;
 }
