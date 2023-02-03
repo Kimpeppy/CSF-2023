@@ -236,14 +236,20 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
     return val;
   }
   while (i < 4) {
+    // Copy the val.data for bitmask
     uint64_t temp = val.data[i];
+    // If the value is greater than the bit size, shift the entire thing by 64 bits
     if (numToShift >= 64) {
       val.data[i] = val.data[i] >> 64;
+      // Decrement the value
       numToShift -= 64;
     }
     else {
+      // Shift the actual value
       val.data[i] = val.data[i] << numToShift;
+      // Apply bitmask
       val.data[i] = val.data[i] | bitmask;
+      // Create bitmask
       temp >> 64 - numToShift;
       bitmask = temp & 63;
     }
