@@ -39,6 +39,7 @@ void test_sub_0(TestObjs *objs);
 void test_sub_negative(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
+void test_leftshift(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
   TEST(test_sub_negative);
   TEST(test_mul_1);
   TEST(test_mul_2);
+  TEST(test_leftshift);
 
   TEST_FINI();
 }
@@ -385,6 +387,23 @@ void test_mul_2(TestObjs *objs) {
   ASSERT(0x991f2125eacd3UL == result.data[3]);
 }
 
-void test_bit_is_set() {
+void test_leftshift(TestObjs *objs) {
+  (void) objs;
+  UInt256 val;
+  val = uint256_create_from_u64(1U);
+  unsigned shift = 64;
+  UInt256 result = uint256_leftshift(val, shift);
+  ASSERT(check(result, 0UL, 0UL, 1UL, 0UL));
+
+  UInt256 val2;
+  val.data[0] = 0x8000000000000000UL;
+  val.data[1] = 0UL;
+  val.data[2] = 0UL;
+  val.data[3] = 0UL;
+
+  unsigned shift2 = 1;
+  UInt256 result2 = uint256_leftshift(val2, shift2);
+  ASSERT(check(result, 0UL, 0UL, 1UL, 0UL));
 
 }
+

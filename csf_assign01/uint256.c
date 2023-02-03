@@ -240,7 +240,14 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
     uint64_t temp = val.data[i];
     // If the value is greater than the bit size, shift the entire thing by 64 bits
     if (numToShift >= 64) {
-      val.data[i] = val.data[i] >> 64;
+      uint64_t temp2 = val.data[i];
+      val.data[i] = 0UL;
+      for (int j = i + 1; j < 4; j++) {
+        uint64_t temp3 = val.data[j];
+        val.data[j] = temp2;
+        temp2 = temp3;
+
+      }
       // Decrement the value
       numToShift -= 64;
     }
@@ -253,7 +260,6 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
       // Apply bitmask
       val.data[i] = val.data[i] | bitmask;
       // Create bitmask
-      
       temp >> (64 - numToShift);
       bitmask = temp;
     }
