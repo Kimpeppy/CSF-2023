@@ -246,12 +246,16 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
     }
     else {
       // Shift the actual value
+      if (numToShift == 0) {
+        return val;
+      }
       val.data[i] = val.data[i] << numToShift;
       // Apply bitmask
       val.data[i] = val.data[i] | bitmask;
       // Create bitmask
-      temp >> 64 - numToShift;
-      bitmask = temp & 63;
+      
+      temp >> (64 - numToShift);
+      bitmask = temp;
     }
     i++;
   }
