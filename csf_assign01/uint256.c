@@ -48,11 +48,12 @@ UInt256 uint256_create_from_hex(const char *hex) {
 
   // We need to take the substring of the rightmost 64 characters.
   int length = strlen(hex);
-  char* sixteen_char = malloc(sizeof(char) * 17);
+  char sixteen_char[17];
   
-  for (int i = 0; i < 4; i--) {
+  for (int i = 0; i < 4; i++) {
     if (length > 16) {
       strncpy(sixteen_char, hex + (length - 16), 16);
+      sixteen_char[16] = '\0';
       chunk = strtoul(sixteen_char, NULL, 16);
       result.data[i] = chunk;
       length = length - 16;
@@ -60,6 +61,7 @@ UInt256 uint256_create_from_hex(const char *hex) {
     else {
       // If here, we need the substring
       strncpy(sixteen_char, hex, length);
+      sixteen_char[length] = '\0';
       chunk = strtoul(sixteen_char, NULL, 16);
       result.data[i] = chunk;
       break;
@@ -112,6 +114,7 @@ char *uint256_format_as_hex(UInt256 val) {
     // Add the buf to the concatnate exit
     i--; 
   }
+  free(buf);
   
   return hex;
 }

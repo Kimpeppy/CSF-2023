@@ -379,6 +379,7 @@ void test_mul_2(TestObjs *objs) {
   left.data[2] = 0x0UL;
   left.data[3] = 0x0UL;
   right.data[0] = 0x484c32d955a47a2fUL;
+  right.data[1] = 0x14bf658bd8053a9UL;
   right.data[2] = 0x0UL;
   right.data[3] = 0x0UL;
   result = uint256_mul(left, right);
