@@ -77,7 +77,7 @@ char *uint256_format_as_hex(UInt256 val) {
   char *buf = NULL;
 
   hex = malloc(sizeof(char) * 65);
-  hex[0] = "\0";
+  hex[0] = '\0';
   buf = malloc(sizeof(char) * 17);
 
   int i = 3;
@@ -194,8 +194,8 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
   // Add the new shift value to the product
   for (int i = 0; i < 256; i++) {
     if (uint256_bit_is_set(left, i)) {
-      uint256_leftshift(right, i);
-      uint256_add(left, right);
+      UInt256 term = uint256_leftshift(right, i);
+      product = uint256_add(product, term);
     }
   }
  
@@ -207,31 +207,23 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
 // 101 & 100 = 1 if 
 int uint256_bit_is_set(UInt256 val, unsigned index) {
   uint64_t data;
-  if (index >= 0 || index < 64) {
-    data = val.data[0];
-  }
-  else if (index >= 64 || index < 128) {
-    data = val.data[1];
-  }
-  else if (index >= 128 || index < 192) {
-    data = val.data[2];
-  } 
-  else {
-    data = val.data[3];
-  }
-  unsigned newIndex = index % 64;
-  if ((data >> newIndex) & 1) {
+  unsigned newIndex = index / 64; //Val.data[newIndex];
+  unsigned bitIndex = index % 64; //the bit place
+
+  data = val.data[newIndex];
+  if (data & (1UL << bitIndex)) {
     return 1;
   }
   else {
     return 0;
   }
+
 }
 
 UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
   int i = 0;
   unsigned numToShift = shift;
-  unsigned bitmask = 0;
+  uint64_t bitmask = 0UL;
   if (shift == 0) {
     return val;
   }
@@ -260,7 +252,7 @@ UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
       // Apply bitmask
       val.data[i] = val.data[i] | bitmask;
       // Create bitmask
-      temp >> (64 - numToShift);
+      temp = temp >> (64 - numToShift);
       bitmask = temp;
     }
     i++;
