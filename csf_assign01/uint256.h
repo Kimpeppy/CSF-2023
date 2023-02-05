@@ -10,7 +10,8 @@
 //
 // Don't make any changes to the representation of this data type.
 // (I.e., don't add fields, remove fields, change names of fields, etc.)
-typedef struct {
+typedef struct
+{
   uint64_t data[4];
 } UInt256;
 

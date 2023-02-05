@@ -4,7 +4,8 @@
 
 #include "uint256.h"
 
-typedef struct {
+typedef struct
+{
   UInt256 zero;
   UInt256 one;
   UInt256 large1;
@@ -42,8 +43,10 @@ void test_mul_2(TestObjs *objs);
 void test_leftshift(TestObjs *objs);
 void test_bit_is_set(TestObjs *objs);
 
-int main(int argc, char **argv) {
-  if (argc > 1) {
+int main(int argc, char **argv)
+{
+  if (argc > 1)
+  {
     tctest_testname_to_execute = argv[1];
   }
 
@@ -72,8 +75,9 @@ int main(int argc, char **argv) {
   TEST_FINI();
 }
 
-TestObjs *setup(void) {
-  TestObjs *objs = (TestObjs *) malloc(sizeof(TestObjs));
+TestObjs *setup(void)
+{
+  TestObjs *objs = (TestObjs *)malloc(sizeof(TestObjs));
 
   // initialize several UInt256 values "manually"
 
@@ -101,18 +105,18 @@ TestObjs *setup(void) {
   return objs;
 }
 
-void cleanup(TestObjs *objs) {
+void cleanup(TestObjs *objs)
+{
   free(objs);
 }
 
-int check(UInt256 val, uint64_t val3, uint64_t val2, uint64_t val1, uint64_t val0) {
-  return uint256_get_bits(val, 3) == val3
-      && uint256_get_bits(val, 2) == val2
-      && uint256_get_bits(val, 1) == val1
-      && uint256_get_bits(val, 0) == val0;
+int check(UInt256 val, uint64_t val3, uint64_t val2, uint64_t val1, uint64_t val0)
+{
+  return uint256_get_bits(val, 3) == val3 && uint256_get_bits(val, 2) == val2 && uint256_get_bits(val, 1) == val1 && uint256_get_bits(val, 0) == val0;
 }
 
-void test_get_bits(TestObjs *objs) {
+void test_get_bits(TestObjs *objs)
+{
   ASSERT(0U == uint256_get_bits(objs->zero, 3));
   ASSERT(0U == uint256_get_bits(objs->zero, 2));
   ASSERT(0U == uint256_get_bits(objs->zero, 1));
@@ -124,7 +128,8 @@ void test_get_bits(TestObjs *objs) {
   ASSERT(1U == uint256_get_bits(objs->one, 0));
 }
 
-void test_create_from_u64(TestObjs *objs) {
+void test_create_from_u64(TestObjs *objs)
+{
   objs->zero = uint256_create_from_u64(0U);
   objs->one = uint256_create_from_u64(1U);
 
@@ -132,11 +137,12 @@ void test_create_from_u64(TestObjs *objs) {
   ASSERT(check(objs->one, 0U, 0U, 0U, 1U));
 }
 
-void test_create(TestObjs *objs) {
+void test_create(TestObjs *objs)
+{
   // Note that the initializers list the uint64_t values to
   // be stored in order from least significant to most significant
-  uint64_t zero_init[] =   {0U, 0U, 0U, 0U};
-  uint64_t one_init[] =    {1U, 0U, 0U, 0U};
+  uint64_t zero_init[] = {0U, 0U, 0U, 0U};
+  uint64_t one_init[] = {1U, 0U, 0U, 0U};
 
   objs->zero = uint256_create(zero_init);
   objs->one = uint256_create(one_init);
@@ -149,7 +155,8 @@ void test_create(TestObjs *objs) {
   ASSERT(check(objs->one, 0U, 0U, 0U, 1U));
 }
 
-void test_create_from_hex(TestObjs *objs) {
+void test_create_from_hex(TestObjs *objs)
+{
   UInt256 val;
 
   val = uint256_create_from_hex(objs->hex1);
@@ -159,7 +166,8 @@ void test_create_from_hex(TestObjs *objs) {
   ASSERT(check(val, 0x0UL, 0x0UL, 0x0UL, 0xcafeUL));
 }
 
-void test_format_as_hex(TestObjs *objs) {
+void test_format_as_hex(TestObjs *objs)
+{
   char *s;
 
   s = uint256_format_as_hex(objs->zero);
@@ -171,7 +179,8 @@ void test_format_as_hex(TestObjs *objs) {
   free(s);
 }
 
-void test_add_1(TestObjs *objs) {
+void test_add_1(TestObjs *objs)
+{
   // basic addition tests
 
   UInt256 sum;
@@ -184,10 +193,11 @@ void test_add_1(TestObjs *objs) {
   ASSERT(1UL == sum.data[0]);
 }
 
-void test_add_2(TestObjs *objs) {
+void test_add_2(TestObjs *objs)
+{
   // "medium" addition tests
 
-  (void) objs;
+  (void)objs;
 
   UInt256 left, right, result;
 
@@ -207,10 +217,11 @@ void test_add_2(TestObjs *objs) {
   ASSERT(0x0UL == result.data[3]);
 }
 
-void test_add_3(TestObjs *objs) {
+void test_add_3(TestObjs *objs)
+{
   // "large" addition tests
 
-  (void) objs;
+  (void)objs;
 
   UInt256 left, right, result;
 
@@ -230,9 +241,10 @@ void test_add_3(TestObjs *objs) {
   ASSERT(0xac5151273cfcf2eUL == result.data[3]);
 }
 
-void test_add_0(TestObjs *objs) {
+void test_add_0(TestObjs *objs)
+{
   // "zero" addition tests
-  (void) objs;
+  (void)objs;
   UInt256 left, right, result, sum;
 
   // Test adding 0 to one;
@@ -242,16 +254,19 @@ void test_add_0(TestObjs *objs) {
   ASSERT(0UL == sum.data[2]);
   ASSERT(0UL == sum.data[1]);
   ASSERT(1UL == sum.data[0]);
-
 }
 
-void test_add_max(TestObjs *objs) {
+void test_add_max(TestObjs *objs)
+{
   // "Overflow" addition test
-  (void) objs;
+  (void)objs;
   UInt256 left, right, result;
 
   UInt256 max;
-  for (int i = 0; i < 4; ++i) { max.data[i] = ~(0UL); }
+  for (int i = 0; i < 4; ++i)
+  {
+    max.data[i] = ~(0UL);
+  }
 
   UInt256 one = uint256_create_from_u64(1UL);
 
@@ -264,7 +279,8 @@ void test_add_max(TestObjs *objs) {
   ASSERT(sum.data[0] == 0UL);
 }
 
-void test_sub_1(TestObjs *objs) {
+void test_sub_1(TestObjs *objs)
+{
   // basic subtraction tests
 
   UInt256 result;
@@ -276,10 +292,11 @@ void test_sub_1(TestObjs *objs) {
   ASSERT(1UL == result.data[0]);
 }
 
-void test_sub_2(TestObjs *objs) {
+void test_sub_2(TestObjs *objs)
+{
   // "medium" subtraction tests
 
-  (void) objs;
+  (void)objs;
 
   UInt256 left, right, result;
 
@@ -299,10 +316,11 @@ void test_sub_2(TestObjs *objs) {
   ASSERT(0x0UL == result.data[3]);
 }
 
-void test_sub_3(TestObjs *objs) {
+void test_sub_3(TestObjs *objs)
+{
   // "large" subtraction tests
 
-  (void) objs;
+  (void)objs;
 
   UInt256 left, right, result;
 
@@ -322,7 +340,8 @@ void test_sub_3(TestObjs *objs) {
   ASSERT(0x4a4b72ebb654226UL == result.data[3]);
 }
 
-void test_sub_0(TestObjs *objs) {
+void test_sub_0(TestObjs *objs)
+{
   UInt256 left, right, result;
 
   left = uint256_create_from_u64(1UL);
@@ -334,11 +353,10 @@ void test_sub_0(TestObjs *objs) {
   ASSERT(0UL == result.data[2]);
   ASSERT(0UL == result.data[1]);
   ASSERT(1UL == result.data[0]);
-
-
 }
 
-void test_sub_negative(TestObjs *objs) {
+void test_sub_negative(TestObjs *objs)
+{
   // Negative subtraction tests
   UInt256 left, right, result;
 
@@ -346,7 +364,10 @@ void test_sub_negative(TestObjs *objs) {
   right = uint256_create_from_u64(1UL);
 
   UInt256 max;
-  for (int i = 0; i < 4; ++i) { max.data[i] = ~(0UL); }
+  for (int i = 0; i < 4; ++i)
+  {
+    max.data[i] = ~(0UL);
+  }
 
   result = uint256_sub(left, right);
 
@@ -356,7 +377,9 @@ void test_sub_negative(TestObjs *objs) {
   ASSERT(max.data[3] == result.data[3]);
 }
 
-void test_mul_1(TestObjs *objs) {
+// testing mul function 
+void test_mul_1(TestObjs *objs)
+{
   // basic multiplication tests
 
   UInt256 result;
@@ -368,8 +391,10 @@ void test_mul_1(TestObjs *objs) {
   ASSERT(check(result, 0UL, 0UL, 0UL, 0UL));
 }
 
-void test_mul_2(TestObjs *objs) {
-  (void) objs;
+// testing mul function
+void test_mul_2(TestObjs *objs)
+{
+  (void)objs;
 
   UInt256 left, right, result;
 
@@ -389,8 +414,10 @@ void test_mul_2(TestObjs *objs) {
   ASSERT(0x991f2125eacd3UL == result.data[3]);
 }
 
-void test_leftshift(TestObjs *objs) {
-  (void) objs;
+// testing left_shift
+void test_leftshift(TestObjs *objs)
+{
+  (void)objs;
   UInt256 val;
   val = uint256_create_from_u64(1U);
   unsigned shift = 64;
@@ -406,11 +433,12 @@ void test_leftshift(TestObjs *objs) {
   unsigned shift2 = 1;
   UInt256 result2 = uint256_leftshift(val2, shift2);
   ASSERT(check(result, 0UL, 0UL, 1UL, 0UL));
-
 }
 
-void test_bit_is_set(TestObjs *objs) {
-  (void) objs;
+// testing bit_is_set
+void test_bit_is_set(TestObjs *objs)
+{
+  (void)objs;
   UInt256 val = uint256_create_from_u64(1U);
   int result1 = uint256_bit_is_set(val, 0);
   ASSERT(result1 == 1);
@@ -419,4 +447,3 @@ void test_bit_is_set(TestObjs *objs) {
   int result3 = uint256_bit_is_set(val, 32);
   ASSERT(result3 == 0);
 }
-
