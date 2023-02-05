@@ -36,21 +36,26 @@ UInt256 uint256_create(const uint64_t data[4]) {
   return result;
 }
 
-// Afaf TODO:
 // Create a UInt256 value from a string of hexadecimal digits.
 UInt256 uint256_create_from_hex(const char *hex) {
   UInt256 result;
   uint64_t chunk;
 
+  // Initially set all bits to 0
   for (int i = 0; i < 4; i++) {
     result.data[i] = 0UL;
   }
 
-  // We need to take the substring of the rightmost 64 characters.
-  int length = strlen(hex);
+  // Store the length of the string of hexadecimal digits
+  int length = strlen(hex); 
+  // Store chunk of right-most 16 hex digits
   char sixteen_char[17];
   
+  // For each bit, start with the right-most 16 hex digits, 
+  // convert them to a uint64_t value and assign the resulting value to data[i]
   for (int i = 0; i < 4; i++) {
+    // If here, we need to take the substring of the right-most 64 characters
+    // and convert them by splitting them into chunks of 16 hex digits at a time
     if (length > 16) {
       strncpy(sixteen_char, hex + (length - 16), 16);
       sixteen_char[16] = '\0';
@@ -59,7 +64,6 @@ UInt256 uint256_create_from_hex(const char *hex) {
       length = length - 16;
     }
     else {
-      // If here, we need the substring
       strncpy(sixteen_char, hex, length);
       sixteen_char[length] = '\0';
       chunk = strtoul(sixteen_char, NULL, 16);
@@ -71,7 +75,7 @@ UInt256 uint256_create_from_hex(const char *hex) {
   return result;
   }
  
-// Michael TODO:
+
 // Return a dynamically-allocated string of hex digits representing the
 // given UInt256 value.
 char *uint256_format_as_hex(UInt256 val) {
@@ -84,12 +88,12 @@ char *uint256_format_as_hex(UInt256 val) {
 
   int i = 3;
 
-  // If this is active, there is leading zeros
+  // If this flag is active, there are leading zeros
   int zeroFlag = 1;
 
   while (i >= 0) {
     uint64_t data = val.data[i];
-    // We need to check if data is a zero and the zeroflag is activated
+    // We need to check if data is a zero and if so, the zeroflag is activated
     if (i == 0 && zeroFlag && val.data[i] == 0U) {
       char temp[1] = "0";
       strcpy(hex, temp);
@@ -111,7 +115,7 @@ char *uint256_format_as_hex(UInt256 val) {
       sprintf(buf, "%016lx", data);
       strcat(hex, buf);
     }
-    // Add the buf to the concatnate exit
+    // Add the buf to the concatenate exit
     i--; 
   }
   free(buf);
@@ -138,19 +142,18 @@ UInt256 uint256_add(UInt256 left, UInt256 right) {
   sum.data[1] = 0U;
   sum.data[2] = 0U;
   sum.data[3] = 0U;
-
+  
+  // This carry flag is activated when there is an overflow
+  // Stores the bit to be carried over
   uint64_t carry = 0U;
   
-  
   for (int i = 0; i < 4; i++) {
-    // You add left data + right data
+    // Add left data + right data
     sum.data[i] = left.data[i] + right.data[i];
 
-    // Check if left and right overflows
-    // If it overflow set the carry flag
-    // After that if statement, the carry to the sum
-    // If it overflow set the carry flag
-    
+    // Check if the left and right values overflow
+    // If there is an overflow, set the carry flag
+    // After this if statement, carry the left-over bit to the sum
     if (sum.data[i] < left.data[i]) {
       sum.data[i]+= carry;
       carry = 1U;
@@ -192,7 +195,7 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
   product.data[2] = 0U;
   product.data[3] = 0U;
 
-  // Do a for loop that goes over every bit on the left UInt256
+  // Do a for-loop that goes over every bit on the left UInt256
   // Shift b amount of bit by a
   // Add the new shift value to the product
   for (int i = 0; i < 256; i++) {
@@ -205,13 +208,11 @@ UInt256 uint256_mul(UInt256 left, UInt256 right) {
   return product;
 }
 
-// 1-256
-// bitwise operations left shift and and operation
-// 101 & 100 = 1 if 
+// Function for checking whether a particular bit is set to 1
 int uint256_bit_is_set(UInt256 val, unsigned index) {
   uint64_t data;
-  unsigned newIndex = index / 64; //Val.data[newIndex];
-  unsigned bitIndex = index % 64; //the bit place
+  unsigned newIndex = index / 64; // Val.data[newIndex];
+  unsigned bitIndex = index % 64; // The bit index
 
   data = val.data[newIndex];
   if (data & (1UL << bitIndex)) {
@@ -223,10 +224,13 @@ int uint256_bit_is_set(UInt256 val, unsigned index) {
 
 }
 
+// Function for left-shifting a value by a specified number of positions
 UInt256 uint256_leftshift(UInt256 val, unsigned shift) {
   int i = 0;
   unsigned numToShift = shift;
   uint64_t bitmask = 0UL;
+
+  // If the number of positions to shift the value by is zero
   if (shift == 0) {
     return val;
   }
