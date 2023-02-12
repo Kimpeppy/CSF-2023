@@ -21,36 +21,35 @@
 
 	.globl hex_format_byte_as_hex
 	hex_format_byte_as_hex:
-
 	// first variable is r8b and second is dil
 		movb %dil, %r8b // move first argument into a temp register/r8b
-		movl $0, %r10d // 
-		shrb $4, %r8b
-		andb $15, %dil
-		cmpb $10, %r8b
-		jb .hexLess
-		jmp .hexGreater
+		movl $0, %r10d // store first index of the array register as 0 in r10d 
+		shrb $4, %r8b // shift the first argument by 4 bytes
+		andb $15, %dil // find remainder
+		cmpb $10, %r8b // check if the first argument/value in r8b is less than 10
+		jb .hexLess // jump if it's less
+		jmp .hexGreater // jump if it's greater
 	.hexLess:
-		addb $48, %r8b
-		movb %r8b, (%rsi, %r10, 1)
-		incl %r10d
-		jmp .hexTwo
+		addb $48, %r8b // add 48 to the first hex digit
+		movb %r8b, (%rsi, %r10, 1) move the value into the array register
+		incl %r10d // increment the index of the array register
+		jmp .hexTwo // jump to the second if statement
 	.hexGreater:
-		addb $87, %r8b
-		movb %r8b, (%rsi, %r10, 1)
-		incl %r10d
+		addb $87, %r8b // add 87 to the first hex digit
+		movb %r8b, (%rsi, %r10, 1) move the argument into the array register
+		incl %r10d // increment the index of the array register
 	
-	.hexTwo:
-		cmpb $10, %dil
-		jb .hexLessTwo
-		jmp .hexGreaterTwo
+	.hexTwo: // second function call for the second argument/hex digit
+		cmpb $10, %dil // check if the second argument/value in dil is less than 10
+		jb .hexLessTwo // jump if it's less
+		jmp .hexGreaterTwo // jump if it's greater
 	.hexLessTwo:
-		addb $48, %dil
-		movb %dil, (%rsi, %r10, 1)
+		addb $48, %dil // add 48 to the second hex digit
+		movb %dil, (%rsi, %r10, 1) // move the argument into the array register to return
 		ret
 	.hexGreaterTwo:
-		addb $87, %dil
-		movb %dil, (%rsi, %r10, 1)
+		addb $87, %dil // add 87 to the second hex digit
+		movb %dil, (%rsi, %r10, 1) // move the argument into the array register to return
 		ret
 
 
