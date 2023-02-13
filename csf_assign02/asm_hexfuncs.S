@@ -17,6 +17,40 @@
 
 	.globl hex_format_offset
 	hex_format_offset:
+		movl $8, %r10d // Make the r10 register the index we are on, which is 8/ where the null terminator will be
+		movb $0, (%rsi, %r10, 1) // Set the null terminator at the end of the char array
+		decl %r10d // Decrement the index by 1
+		cmpb $0, %dil // Compare offset to 0
+		ja .offsetLoopOne // Jump to first loop if greater than 0
+		jmp .offsetLoopTwo // Jump to the second loop if less or equal to 0
+	.offsetLoopOne:
+		movb %sil, %r8b // Move the current offset into a temp register to use and operation
+		andb $15, %r8b // Get the remainder
+		cmpb $10, %r8b // Compare the remainder to 0
+		jb .loopOneLess 
+	.loopOneLess:
+		addb $48, %r8b // Add 48 to make it a number
+		movb %r8b, (%rsi, %r10, 1) // Move the character into the array
+		decl %r10d // Decremtn the index by 1
+		jmp .offsetLoopTwo // Jump to the end of the loop
+	.loopOneGreater:
+		addb $48, %r8b // Add 48 to make it a letter
+		movb %r8b, (%rsi, %r10, 1) // Move the character into the array
+		decl %r10d // Decremtn the index by 1
+	.offsetLoopTwo:
+		shrb $4, %sil // Shift the offset by 4 to the right
+		decl %r10d // Decrement the index by 1
+		cmpb $0, %dil // Compare the offset to 0
+		ja .offsetLoopOne
+	.offsetZero:
+		cmpl $0, %r10d // Check if the pointer is 0
+		ja .offsetGreaterThanZero
+		ret
+	.offsetGreaterThanZero:
+		movb $48, (%rsi, %r10, 1) // Put the 0 in the array
+		decl %r10d // Decrement the pointer by 1
+		jmp .offsetZero // Jump back to the comparison
+
 
 
 	.globl hex_format_byte_as_hex
@@ -31,12 +65,12 @@
 		jmp .hexGreater // jump if it's greater
 	.hexLess:
 		addb $48, %r8b // add 48 to the first hex digit
-		movb %r8b, (%rsi, %r10, 1) move the value into the array register
+		movb %r8b, (%rsi, %r10, 1) //move the value into the array register
 		incl %r10d // increment the index of the array register
 		jmp .hexTwo // jump to the second if statement
 	.hexGreater:
 		addb $87, %r8b // add 87 to the first hex digit
-		movb %r8b, (%rsi, %r10, 1) move the argument into the array register
+		movb %r8b, (%rsi, %r10, 1)//move the argument into the array register
 		incl %r10d // increment the index of the array register
 	
 	.hexTwo: // second function call for the second argument/hex digit
