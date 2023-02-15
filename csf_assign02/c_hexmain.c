@@ -4,7 +4,7 @@
 
 int main(void) {
   // TODO: implement the main function
-  char *data_buf = malloc(sizeof(char) * 17);
+  char data_buf[17];
   char sbuf[8];
   
   // Reference to characters
@@ -16,6 +16,13 @@ int main(void) {
   unsigned temp = hex_read(data_buf);
   unsigned counter = 0;
   while (temp != 0) {
+    if (temp < 16) {
+      int numChars = hex_read(data_buf);
+      if (numChars != 0) {
+        temp = temp + numChars;
+        continue;
+      }
+    }
     // Get the first line of position and write it
     hex_format_offset(counter, sbuf);
     hex_write_string(sbuf);
@@ -28,7 +35,6 @@ int main(void) {
     hex_write_string(newline);
     temp = hex_read(data_buf);
   }
-  free(data_buf);
 }
 
 void helper_call_format_as_hex(char data_buf[], char sbuf[]) {

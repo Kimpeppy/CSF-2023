@@ -17,45 +17,54 @@
 
 	.globl hex_format_offset
 	hex_format_offset:
+		// r10d is the index tracking on the array
+		// rsi is the array that stores the char array
+		// edi stores the offset as a char variable
+		// r11b is a temp variable to store the remainder
+		movl $0, %r10d
+	.setAllToZero:
+		cmpl $8, %r10d
+		jge .beginFunction
+
+		movb $48, (%rsi, %r10, 1)
+		incl %r10d
+		jmp .setAllToZero
+	
+	.beginFunction:
 		movl $8, %r10d // Make the r10 register the index we are on, which is 8/ where the null terminator will be
 		movb $0, (%rsi, %r10, 1) // Set the null terminator at the end of the char array
 		decl %r10d // Decrement the index by 1
-		cmpb $0, %dil // Compare offset to 0
+		cmpl $0, %r10d 
 		ja .offsetLoopOne // Jump to first loop if greater than 0
-		jmp .offsetLoopTwo // Jump to the second loop if less or equal to 0
+		ret
 	.offsetLoopOne:
-		movb %sil, %r8b // Move the current offset into a temp register to use and operation
-		andb $15, %r8b // Get the remainder
-		cmpb $10, %r8b // Compare the remainder to 0
-		jb .loopOneLess 
+		movq $0, %r11
+		movb %dil, %r11b // Move the current offset into a temp register to use and operation
+		andb $15, %r11b // Get the remainder
+		cmpb $10, %r11b // Compare the remainder to 0
+		jb .loopOneLess // Jump to assigning num to array
+		jmp .loopOneGreater // Jump to assigning letter to array
 	.loopOneLess:
-		addb $48, %r8b // Add 48 to make it a number
-		movb %r8b, (%rsi, %r10, 1) // Move the character into the array
-		decl %r10d // Decremtn the index by 1
+		addb $48, %r11b // Add 48 to make it a number
+		movb %r11b, (%rsi, %r10, 1) // Move the character into the array
 		jmp .offsetLoopTwo // Jump to the end of the loop
 	.loopOneGreater:
-		addb $48, %r8b // Add 48 to make it a letter
-		movb %r8b, (%rsi, %r10, 1) // Move the character into the array
-		decl %r10d // Decremtn the index by 1
+		addb $87, %r11b // Add 48 to make it a letter
+		movb %r11b, (%rsi, %r10, 1) // Move the character into the array
 	.offsetLoopTwo:
-		shrb $4, %sil // Shift the offset by 4 to the right
+		shrl $4, %edi // Shift the offset by 4 to the right
 		decl %r10d // Decrement the index by 1
-		cmpb $0, %dil // Compare the offset to 0
-		ja .offsetLoopOne
-	.offsetZero:
-		cmpl $0, %r10d // Check if the pointer is 0
-		ja .offsetGreaterThanZero
+		cmpl $0, %r10d // Compare the offset to 0
+		jge .offsetLoopOne
 		ret
-	.offsetGreaterThanZero:
-		movb $48, (%rsi, %r10, 1) // Put the 0 in the array
-		decl %r10d // Decrement the pointer by 1
-		jmp .offsetZero // Jump back to the comparison
 
 
 
 	.globl hex_format_byte_as_hex
 	hex_format_byte_as_hex:
 	// first variable is r8b and second is dil
+		movl $2, %r10d
+		movb $0, (%rsi, %r10, 1)
 		movb %dil, %r8b // move first argument into a temp register/r8b
 		movl $0, %r10d // store first index of the array register as 0 in r10d 
 		shrb $4, %r8b // shift the first argument by 4 bytes
