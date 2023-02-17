@@ -8,15 +8,9 @@
 // Read up to 16 bytes from standard input into data_buf.
 // Returns the number of characters read.
 unsigned hex_read(char data_buf[]) {
-    unsigned length = 0;
-    while (data_buf[length] != '\0') {
-        length++;
-    }
-    if (length == 16) {
-        length = 0;
-    }
-
-    unsigned byte = read(0, data_buf + length, 16 - length);
+//STDIN_FILENO
+    unsigned byte = read(0, data_buf, 16);
+    data_buf[byte] = '\0';
     return byte;
 }
 
@@ -86,7 +80,7 @@ void hex_format_byte_as_hex(unsigned char byteval, char sbuf[]) {
 // unmodified.  If byteval is not a printable character, then the
 // ASCII code for '.' should be returned.
 char hex_to_printable(unsigned char byteval) {
-    if (byteval > 31) {
+    if (byteval > 31 && byteval < 127) {
         return byteval;
     } 
     else {
