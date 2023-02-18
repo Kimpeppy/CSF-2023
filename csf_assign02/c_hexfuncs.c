@@ -10,7 +10,6 @@
 unsigned hex_read(char data_buf[]) {
 //STDIN_FILENO
     unsigned byte = read(0, data_buf, 16);
-    data_buf[byte] = '\0';
     return byte;
 }
 
