@@ -9,10 +9,39 @@
 	/* TODO: add functions here */
 	.globl hex_read
 	hex_read:
-
+		// rdi stores the first argument to read
+		// rsi is the array that stores the char array
+		// rdx stores the third parameter for the number of bytes read
+		// buf is intially the first parameter passed to the hex_read function
+		movq %rdi, %rsi // buf becomes second argument
+		movq $0, %rdi
+		movq $16, %rdx 
+		call read
+		// at this point, rax holds the value for byte which is to be returned
+		ret
+	
 
 	.globl hex_write_string
 	hex_write_string:
+		// rdi stores 's' char array intiially
+		// move s to rsi because it is the second argument for the write function
+		movq %rdi, %rsi
+		// rdi now stores first argument for write function
+		movq $1, %rdi
+		// r10d stores intial value assigned to length
+		movq $0, %r10
+		jmp .checkLoopCondition
+
+	.beginLooping:
+		incq %r10 // increment length by 1
+	.checkLoopCondition:
+		cmpb $0, (%rsi, %r10, 1) // check if character is the null terminator
+		jne .beginLooping
+
+		// move length from temp variable to third argument of the write function
+		movq %r10, %rdx
+		call write
+		ret
 
 
 	.globl hex_format_offset
