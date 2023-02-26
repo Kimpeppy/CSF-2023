@@ -4,7 +4,7 @@
 #include "hexfuncs.h"  // this is the only header file which may be included!
 
 int main(void) {
-  // TODO: implement the main function
+  
   char data_buf[17];
   char sbuf[9];
   data_buf[16] = '\0';
@@ -15,12 +15,10 @@ int main(void) {
     sbuf[i] = '0';
   }
 
-  //Referance
+  //Reference
   char colon[2] = {':', '\0'};
   char space[2] = {' ', '\0'};
   char newLine[2] = {'\n', '\0'};
-  
-
 
   // Variables to read the input
   unsigned temp = hex_read(data_buf);
@@ -30,7 +28,7 @@ int main(void) {
     // Get the first line of position and write it
     hex_format_offset(counter, sbuf);
     hex_write_string(sbuf);
-    // Seperate the position from the hexadecimal
+    // Separate the position from the hexadecimal
     hex_write_string(colon);
     hex_write_string(space);
     // Print out the set of hexadecimal
@@ -43,7 +41,6 @@ int main(void) {
   }
   
 }
-
 
 void helper_call_format_as_hex(char data_buf[], char sbuf[], unsigned temp) {
   char space[2] = {' ', '\0'};

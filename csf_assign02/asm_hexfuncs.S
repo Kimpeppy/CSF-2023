@@ -6,7 +6,6 @@
 
 	.section .text
 
-	/* TODO: add functions here */
 	.globl hex_read
 	hex_read:
 		// rdi stores the first argument to read
@@ -24,12 +23,9 @@
 	.globl hex_write_string
 	hex_write_string:
 		// rdi stores 's' char array intiially
-		// move s to rsi because it is the second argument for the write function
-		movq %rdi, %rsi
-		// rdi now stores first argument for write function
-		movq $1, %rdi
-		// r10d stores intial value assigned to length
-		movq $0, %r10
+		movq %rdi, %rsi // move s to rsi because it is the second argument for the write function
+		movq $1, %rdi   // rdi now stores first argument for write function
+		movq $0, %r10   // r10d stores intial value assigned to length
 		jmp .checkLoopCondition
 
 	.beginLooping:
@@ -88,7 +84,6 @@
 		ret
 
 
-
 	.globl hex_format_byte_as_hex
 	hex_format_byte_as_hex:
 	// first variable is r8b and second is dil
@@ -129,11 +124,18 @@
 	hex_to_printable:
 		cmpb $31, %dil // Check if the byteval is greater than 31
 		ja .greater // Jump if it's greater
-		jmp .less // Jump if it's less
+		jmp .returnPeriod
+		
 	.greater:
+		cmpb $127, %dil  // Check if the byteval is less than 127
+		jb .less // Jump if it's less
+		jmp .returnPeriod
+
+	.less:
 		movb %dil, %al // Move the arguement into the return register
 		ret
-	.less:
+
+	.returnPeriod:
 		movb $46, %dil // Make dil a period before returning it
 		movb %dil, %al // Move the arguement into the return register
 	ret
