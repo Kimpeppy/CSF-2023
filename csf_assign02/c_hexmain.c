@@ -41,7 +41,6 @@ int main(void) {
 void helper_call_format_as_hex(char data_buf[], char sbuf[], unsigned temp) {
   char space[2] = {' ', '\0'};
   for (unsigned i = 0; i < temp; i++) {
-    // data_buf[i] = hex_to_printable(data_buf[i]);
     hex_format_byte_as_hex(data_buf[i], sbuf);
     hex_write_string(sbuf);
     data_buf[i] = hex_to_printable(data_buf[i]);
