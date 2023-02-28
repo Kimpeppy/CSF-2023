@@ -21,31 +21,13 @@ main:
 		movq $sbuf, %r13
 		movl $16, %r10d // Make the r10 register the index 16, where the null terminator will be
 		movb $0, (%r12, %r10, 1) // Set the null terminator at the end of the char data_buf array
-		movl $0, %r11d  // starting index of the data_buf char array
-		jmp .checkFirstLoop
-
-	.setDataBufToZero:
-		movb $48, (%r12, %r11, 1)  // set all entries in data_buf to store 0
-		incl %r11d // increment current index of data_buf array
-	.checkFirstLoop:
-		cmpl $16, %r11d  // check if index is less than 16
-		jl .setDataBufToZero  // if it is, set next entry in the array to 0
-
-		movl $0, %r11d  // starting index of the sbuf char array
-		jmp .checkSecondLoop
-	
-	.setSbufToZero:
-		movb $48, (%r13, %r11, 1)  // set all entries sbuf to store 0
-		incl %r11d  // increment current index of sbuf array
-	.checkSecondLoop:
-		cmpl $8, %r11d  // check if index is less than 8
-		jl .setSbufToZero  // if it is, set next entry in the array to 0
 
 		movq %r12, %rdi  // pass data_buf as first argument to hex_read
 		call hex_read 
 		movq %rax, %rdx  // store value returned in temp variable 
 		// stored temp in rdx because it will be the third argument for helper_call_format_as_hex later on
 		movb $0, (%r12, %rdx, 1) // set null terminator at index returned by hex_read
+		
 		movl $0, %r10d  // counter variable to keep track of offset
 		jmp .checkWhileLoopCondition
 
@@ -91,7 +73,7 @@ main:
 		jmp .checkFirstLoopCondition
 
 	.startFirstLoop: 
-		movb (%rdi, %r10, 1), %r11b   // r11b stores data_buf[i]
+		movq (%rdi, %r12, 1), %r11   // r11b stores data_buf[i]
 		movq %r11, %rdi   // move data_buf[i] to rdi as first argument to hex_format_byte_as_hex
 		call hex_format_byte_as_hex
 		movq %rsi, %rdi    // move sbuf[] to rdi as first argument for hex_write_string
@@ -105,7 +87,7 @@ main:
 	.checkFirstLoopCondition:
 		// check if condition of for loop is being met i.e., whether i < temp
 		// rdx stores temp since it is the third argument of the function
-		cmpq %r10, %rdx    // check if i is less than temp
+		cmpq %r12, %rdx    // check if i is less than temp
 		jb .startFirstLoop  // go to loop if it is less
 
 		movq %rdx, %r12    // i points to the same value as temp

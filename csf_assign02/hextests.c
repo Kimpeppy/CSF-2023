@@ -55,6 +55,13 @@ void testFormatOffset(TestObjs *objs) {
   ASSERT(0 == strcmp(buf, "abcd1234"));
 }
 
+// void testFormatOffset2(TestObjs *objs) {
+//   (void) objs; // suppress warning about unused parameter
+//   char buf[16];
+//   hex_format_offset(0x077777777u, buf);
+//   ASSERT(0 == strcmp(buf, "77777777"));
+// }
+
 void testFormatByteAsHex(TestObjs *objs) {
   char buf[16];
   hex_format_byte_as_hex(objs->test_data_1[0], buf);
@@ -65,3 +72,8 @@ void testHexToPrintable(TestObjs *objs) {
   ASSERT('H' == hex_to_printable(objs->test_data_1[0]));
   ASSERT('.' == hex_to_printable(objs->test_data_1[13]));
 }
+
+//void hexToPrintable22(TestObjs *objs) {
+  //ASSERT('w' == hex_to_printable(objs->test_data_1[7]));
+  //ASSERT('d' == hex_to_printable(objs->test_data_1[11]));
+//}

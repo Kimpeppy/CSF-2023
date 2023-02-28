@@ -3,17 +3,13 @@
 
 #include "hexfuncs.h"  // this is the only header file which may be included!
 
+void helper_call_format_as_hex(char data_buf[], char sbuf[], unsigned temp);
+
 int main(void) {
   
   char data_buf[17];
   char sbuf[9];
   data_buf[16] = '\0';
-  for (int i = 0; i < 16; i++) {
-    data_buf[i] = '0';
-  }
-  for (int i = 0; i < 8; i++) {
-    sbuf[i] = '0';
-  }
 
   //Reference
   char colon[2] = {':', '\0'};
