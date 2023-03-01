@@ -56,7 +56,7 @@
 		jmp .setAllToZero
 	
 	.beginFunction:
-		movl $8, %r10d // Make the r10 register the index we are on, which is 8/ where the null terminator will be
+		movl $8, %r10d // Make the r10 register the index we are on, i.e., 8, where the null terminator will be
 		movb $0, (%rsi, %r10, 1) // Set the null terminator at the end of the char array
 		decl %r10d // Decrement the index by 1
 		cmpl $0, %r10d 
