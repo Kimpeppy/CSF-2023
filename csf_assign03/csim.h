@@ -1,4 +1,2 @@
-
-int main(int argc, char* argv[]) {
-
-}
+#ifdef MAIN_H
+#define MAIN_H
