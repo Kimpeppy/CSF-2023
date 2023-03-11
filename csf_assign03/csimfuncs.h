@@ -15,7 +15,7 @@
         std::vector<Slot> slots;
     };
 
-    struct Cache{
+    struct Cache {
         std::vector<Set> sets;
         long cycle; // Timer
     };
