@@ -4,13 +4,18 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <math.h>
+#include <cstring>
 
+using std::strcmp;
 using std::cerr;
+using std::ceil;
+using std::floor;
+using std::log2;
 using std::cin;
 using std::cout;
 using std::endl;
 using std::stoi;
-using std::ifstream;
 using std::string;
 
 
@@ -25,35 +30,35 @@ int main(int argc, char *argv[])
     }
 
     // Check to see if int arguments are of a valid type/consist an actual number
-    if (!(isdigit(arg[1])) | !(isdigit(arg[2])) | !(isdigit(arg[3]))) 
+    if (!(isdigit(*(argv[1]))) && !(isdigit(*(argv[2]))) && !(isdigit(*(argv[3])))) 
     {
         cerr << "Invalid arguments";
         return 1;
     }
 
     // Check to see if string arguments are of a valid type
-    if (!(arg[4].equals("no-write-allocate")) | !(arg[4].equals("write-allocate"))) 
+    if (!(strcmp(argv[4], "no-write-allocate") == 0) | !(strcmp(argv[4], "write-allocate") == 0))
     {
         cerr << "Invalid arguments";
         return 1;
     }
 
-    if (!(arg[5].equals("write-through")) | !(arg[5].equals("write-back"))) 
+    if (!(strcmp(argv[5], "write-through") == 0) | !(strcmp(argv[5], "write-back") == 0))
     {
         cerr << "Invalid arguments";
         return 1;
     }
 
-    if (!(arg[4].equals("lru")) | !(arg[4].equals("fifo")))
+    if (!(strcmp(argv[6], "lru") == 0) | !(strcmp(argv[6], "fifo") == 0))
     {
         cerr << "Invalid arguments";
         return 1;
     }
 
     // Convert arguments to integer values
-    int numBlockBytes = stoi(arg[3]);
-    int numSets = stoi(arg[1]);
-    int numBlocks = stoi(arg[2]);
+    int numBlockBytes = stoi(argv[3]);
+    int numSets = stoi(argv[1]);
+    int numBlocks = stoi(argv[2]);
 
     // Check that block size is valid if it is not less than 4
     if (numBlockBytes < 4) 
@@ -77,7 +82,7 @@ int main(int argc, char *argv[])
     }
 
     // Check if write-back and no-write-allocate were both specified
-    if (arg[4].equals("no-write-allocate") && arg[5].equals("write-back"))
+    if ((strcmp(argv[4], "no-write-allocate") == 0) && (strcmp(argv[5], "write-back") == 0))
     {
         cerr << "Invalid arguments";
         return 1;
@@ -95,13 +100,14 @@ int main(int argc, char *argv[])
     uint32_t address;
     char garbage;
     
+    // Work in progress for conditional logic
     // Read in chained data from standard input
     // Use std::hex to convert the string address to hex
     while (cin >> first_arg >> std::hex >> address >> garbage) 
     {
         if (first_arg == 's') {
             
-        }   
+        }
     }
 
 }
