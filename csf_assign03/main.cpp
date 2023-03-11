@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   
     // Create empty cache with input arguments and
     // calculate the index, offset, and tag of the given address
-    createEmptyCache(numBlockBytes, numSets, numBlocks);
+    Cache cacheSim = createEmptyCache(numBlockBytes, numSets, numBlocks);
     uint32_t index = log2(numSets);
     uint32_t offset = log2(numBlockBytes);
     uint32_t tag = 32 - (index + offset);

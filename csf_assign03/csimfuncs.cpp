@@ -52,7 +52,6 @@ Slot block_to_replace(std::vector<Slot> slot, Cache mainCache, bool lru, long ta
     Slot llt;
     Slot lat;
 
-    
     for (Slot& it: slot) {
         if (!(it.valid)) {
             return it;
