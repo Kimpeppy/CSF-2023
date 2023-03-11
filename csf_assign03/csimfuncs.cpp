@@ -72,6 +72,4 @@ Slot block_to_replace(std::vector<Slot> slot, Cache mainCache, bool lru, long ta
         return lat;
     }
 
-
 }
-
