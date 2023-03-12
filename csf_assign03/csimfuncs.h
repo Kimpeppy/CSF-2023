@@ -3,34 +3,40 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <cstdint>
 
     struct Slot {
-        long tag;
+        uint32_t tag;
         bool valid;
         bool dirty;
-        long load_ts, access_ts;
+        uint32_t load_ts, access_ts;
     };
 
     struct Set {
         std::vector<Slot> slots;
+        std::map<uint32_t, Slot *> indexMap;
+        long numOfSlots;
     };
 
-    struct Cache {
+    struct Cache{
         std::vector<Set> sets;
         long cycle; // Timer
     };
 
     // Create an empty cache and initalize it with empty values
     // It will process the parameter to make enough room for the cache 
-    Cache createEmptyCache(long numOfBytes, long numOfSets, long numOfBlocks);
+    Cache* createEmptyCache(uint32_t numOfSets, uint32_t numOfBlocks);
     
     // This function loads from memory to the cache
     // This function will only accept misses
     // Update the cache cycle
-    void load_to_cache(Cache mainCache, Slot replacement, long numOfBytes, long newTag);
+    uint32_t load_to_cache(Cache* mainCache, uint32_t index, uint32_t numOfBytes, uint32_t newTag, uint32_t numOfBlocks, bool lru);
 
     // Find out which slot needs to be replace or find the slot that was hit
     // Returns either an invalid slot or LRU or FIFO slot
-    Slot block_to_replace(std::vector<Slot> slot, Cache mainCache, bool lru);
+    uint32_t searchEvict(Set* currentSet, bool lru);
+
+
+
 
 #endif
