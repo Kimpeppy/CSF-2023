@@ -7,32 +7,35 @@
 #include <map>
 #include <algorithm>
 #include <limits.h>
+#include <math.h>
 #include <unordered_map>
 #include <cstdint>
 
 
 
-Cache* createEmptyCache(uint32_t numOfSets, uint32_t numOfBlocks) {
-    std::vector<Set> sets;
-    Cache* newCache = new Cache{sets, 0};
+void createEmptyCache(Cache *newCache, uint32_t numOfSets, uint32_t numOfBlocks) {
+    // std::vector<Set> sets;
+    // Cache newCache;
     // Initalize the sets in cache
     for (uint32_t i = 0; i < numOfSets; i++) {
         Set newSet;
         newSet.numOfSlots = 0;
         // Initalize the slots in sets
         for (uint32_t j = 0; j < numOfBlocks; j++) {
-            Slot newSlot = {j, false, false, 0, 0};
+            Slot newSlot = {0, false, false, 0, 0, j};
             newSet.slots.push_back(newSlot);
         }
         newCache->sets.push_back(newSet);
     }
-    return newCache;
+    newCache->cycle = 0;
+    // return &newCache;
 }
 
 uint32_t load_to_cache(Cache* mainCache, uint32_t index, uint32_t numOfBytes, uint32_t newTag, uint32_t numOfBlocks, bool lru) {
     Set* currentSet = &(mainCache->sets.at(index));
     // Punish for accessing memory
     mainCache->cycle += ((numOfBytes/4) * 100);
+    
     if (currentSet->numOfSlots < numOfBlocks) {
         // Change the next empty slot to the newTag and update valid and ts
         currentSet->slots.at(currentSet->numOfSlots).tag = newTag;
@@ -42,20 +45,25 @@ uint32_t load_to_cache(Cache* mainCache, uint32_t index, uint32_t numOfBytes, ui
         
         // Add to map
         currentSet->indexMap.insert({newTag, &(currentSet->slots.at(currentSet->numOfSlots))});
-        currentSet->numOfSlots++;
-        return currentSet->numOfSlots;
+        (currentSet->numOfSlots)++;
+        return currentSet->numOfSlots - 1;
     } else {
         // Search for LRU/FIFO
+        //gets the index of the block we want to replace
         uint32_t replacement = searchEvict(currentSet, lru);
+        //get the tag of said block we want to replace
+        uint32_t tagToEvict = currentSet->slots.at(replacement).tag;
+        //deletes the old tag we want to replace
+        currentSet->indexMap.erase(tagToEvict);
         // Change slot to new tag
         currentSet->slots.at(replacement).tag = newTag;
         // Punish for dirty bit
         if (currentSet->slots.at(replacement).dirty) {
             mainCache->cycle += ((numOfBytes/4) * 100);
+            currentSet->slots.at(replacement).dirty = false;
         }
 
-        // Delete the tag from map
-        currentSet->indexMap.erase(replacement);
+        
         // Add to map
         currentSet->indexMap.insert({newTag, &(currentSet->slots.at(replacement))});
         // Update cycles
@@ -75,29 +83,44 @@ uint32_t searchEvict(Set* currentSet, bool lru) {
     uint32_t longest_load_ts = UINT32_MAX;
     uint32_t longest_access_ts = UINT32_MAX;
 
-    uint32_t llt; // Update LRU
-    uint32_t lat; // Update FIFO
+    uint32_t llt; // Update FIFO
+    uint32_t lat; // Update LRU
 
     for (uint32_t i = 0; i < currentSet->numOfSlots; i++) {
-        if (currentSet->slots.at(i).load_ts < longest_load_ts) {
+        if (currentSet->slots.at(i).load_ts < longest_load_ts) { //FIFO
             llt = i;
             longest_load_ts = currentSet->slots.at(i).load_ts;
         }
-        if (currentSet->slots.at(i).access_ts < longest_access_ts) {
+        if (currentSet->slots.at(i).access_ts < longest_access_ts) { //LRU
             lat = i;
             longest_access_ts = currentSet->slots.at(i).access_ts;
         }
     }
-    if (!lru) {
-        return llt;
-    } else {
+    if (lru) {
         return lat;
+    } else {
+        return llt;
+    }
+}
+
+uint32_t getIndex(uint32_t address, uint32_t numOfSets, uint32_t numBytes) {
+    if (numOfSets == 1) { // Fully associative cache
+        return 0;
+    }
+    uint32_t indexSize = log2(numOfSets);
+    uint32_t offsetSize = log2(numBytes);
+
+    uint32_t comparison = 0;
+
+    for(uint32_t i = 0; i < indexSize; i++) {
+        comparison = (comparison << 1) + 1;
     }
 
+    for(uint32_t i = 0; i < offsetSize; i++) {
+        address = address >> 1;
+    }
 
-
-
-    
+    return address & comparison;
 }
 
 

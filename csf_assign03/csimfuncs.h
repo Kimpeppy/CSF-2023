@@ -10,22 +10,23 @@
         bool valid;
         bool dirty;
         uint32_t load_ts, access_ts;
+        uint32_t id;
     };
 
     struct Set {
         std::vector<Slot> slots;
         std::map<uint32_t, Slot *> indexMap;
-        long numOfSlots;
+        uint32_t numOfSlots;
     };
 
     struct Cache{
         std::vector<Set> sets;
-        long cycle; // Timer
+        uint32_t cycle; // Timer
     };
 
     // Create an empty cache and initalize it with empty values
     // It will process the parameter to make enough room for the cache 
-    Cache* createEmptyCache(uint32_t numOfSets, uint32_t numOfBlocks);
+    void createEmptyCache(Cache *newCache, uint32_t numOfSets, uint32_t numOfBlocks);
     
     // This function loads from memory to the cache
     // This function will only accept misses
@@ -35,6 +36,9 @@
     // Find out which slot needs to be replace or find the slot that was hit
     // Returns either an invalid slot or LRU or FIFO slot
     uint32_t searchEvict(Set* currentSet, bool lru);
+
+    uint32_t getIndex(uint32_t address, uint32_t numOfSets, uint32_t numBytes);
+
 
 
 
