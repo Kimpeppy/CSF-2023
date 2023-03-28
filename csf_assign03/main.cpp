@@ -21,8 +21,6 @@ using std::stoi;
 using std::string;
 
 
-
-
 int main(int argc, char *argv[])
 {
     // Error handling
@@ -125,14 +123,9 @@ int main(int argc, char *argv[])
     uint32_t store_hits = 0;
     uint32_t store_misses = 0;
     uint32_t total_cycles = 0;
-    
-
-    // Way to find the hit slot
-
 
     // Bool of if the tag was hit or miss
     bool hit;
-
 
     // Work in progress for conditional logic
     // Read in chained data from standard input
