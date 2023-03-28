@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     createEmptyCache(&cacheSim, numSets, numBlocks);
     uint32_t indexSize = log2(numSets);
     uint32_t offsetSize = log2(numBlockBytes);
-    uint32_t tagSize = 32 - (indexSize + offsetSize);
+    uint32_t bitmask = (int)(pow(2, log2(numSets)) - 1);
 
     
 
@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
     // uint32_t bitmask;
     uint32_t tag;
     bool lru;
-    if (strcmp(argv[6], "lru")) {
+    if (strcmp(argv[6], "lru") == 0) {
         lru = true;
-    } else if (strcmp(argv[6], "fifo")) {
+    } else if (strcmp(argv[6], "fifo") == 0) {
         lru = false;
     }
     
@@ -126,8 +126,9 @@ int main(int argc, char *argv[])
     uint32_t store_misses = 0;
     uint32_t total_cycles = 0;
     
-    // Way to find location of the related slot
-    uint32_t location = 0;
+
+    // Way to find the hit slot
+
 
     // Bool of if the tag was hit or miss
     bool hit;
@@ -136,107 +137,67 @@ int main(int argc, char *argv[])
     // Work in progress for conditional logic
     // Read in chained data from standard input
     // Use std::hex to convert the string address to hex
-    while (cin >> first_arg >> std::hex >> address /* >> garbage */) 
+    std::string garbage = "asda";
+    while (cin >> first_arg >> std::hex >> address/* >> garbage */) 
     {
+        cacheSim.counter++;
 
         // Make hit false
         hit = false;
         // Get the current set
         // Get the memory address of the index and tag
-        index = (address << tagSize) >> (tagSize + offsetSize);
+        index = (address >> (int)log2(numBlockBytes)) & bitmask;
+        if (numSets == 1) {
+            index = 0;
+        }
         
 
         // Get the tag address
         tag = address >> (indexSize + offsetSize);
-
+        // std::cout << "this is address " << address << std::endl;
+        // std::cout << index << std::endl;
         //Search if the cache hit or miss
-
-        std::map<uint32_t, Slot*>::iterator itr = cacheSim.sets.at(index).indexMap.find(tag);
-        if (itr != cacheSim.sets.at(index).indexMap.end()) {
+        if (cacheSim.sets.at(index).indexMap.find(tag) != cacheSim.sets.at(index).indexMap.end()) {
             hit = true;
+            cacheSim.sets.at(index).indexMap[tag]->access_ts = cacheSim.counter; //upodate access counter
         }
+
 
         // If the cache load
         if (first_arg == 'l') {
             total_loads++;
-            //if tag miss
-            if (!hit) {
+            if (hit == false) {
                 load_misses++;
-                location = load_to_cache(&cacheSim, index, numBlockBytes, tag, numBlocks, lru);
-                cacheSim.cycle++;
-                cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
+                load_to_cache(&cacheSim, index, numBlockBytes, tag, numBlocks, lru);
             }
             // if tag hit
             else {
-                location = itr->second->id;
                 load_hits++;
-                cacheSim.cycle++;
-                cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-                
-                // cacheSim->sets.at(index).slots.at(tag).access_ts = cacheSim->cycle;
             }
+            cacheSim.cycle++;
         }
         else if (first_arg == 's') {
             total_stores++;
-            // If the policies is WA/WB
-            
-            if (strcmp(argv[4], "write-allocate") == 0 && strcmp(argv[5], "write-back") == 0) {
-                //if tag miss
-                if (!hit) {
-                    store_misses++;
-                    location = load_to_cache(&cacheSim, index, numBlockBytes, tag, numBlocks, lru);
-                    cacheSim.cycle++;
-                    cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-                    cacheSim.sets.at(index).slots.at(location).dirty = true;
 
-                    
-                }
-                // if tag hit
-                else {
-                    location = itr->second->id;
-                    store_hits++;
+            if (hit) { //HIT
+                store_hits++;
+                //write-back
+                if (strcmp(argv[5], "write-back") == 0) {
                     cacheSim.cycle++;
-                    cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-                    cacheSim.sets.at(index).slots.at(location).dirty = true;
-                    
+                    cacheSim.sets.at(index).indexMap[tag]->dirty = true;
+                } else { //write-through
+                    cacheSim.cycle+= 101;
                 }
-                
+            } else { //MISS
+                store_misses++;
+                if (strcmp(argv[4], "write-allocate") == 0) { //write-allocate
+                    load_to_cache(&cacheSim, index, numBlockBytes, tag, numBlocks, lru);
+                } else {
+                    cacheSim.cycle+=101;
+                }
             }
             
-            else if (strcmp(argv[4], "write-allocate") == 0 && strcmp(argv[5], "write-through") == 0) {
-                // if tag miss
-                //if tag miss
-
-                if (!hit) {
-                    store_misses++;
-                    location = load_to_cache(&cacheSim, index, numBlockBytes, tag, numBlocks, lru);
-                    cacheSim.cycle += 100;
-                    cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-
-                }
-                // if tag hit
-                else {
-                    location = itr->second->id;
-                    store_hits++;
-                    cacheSim.cycle += 100;
-                    cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-                }
-            }
-            else if (strcmp(argv[4], "no-write-allocate") == 0 && strcmp(argv[5], "write-through") == 0) {
-                //if tag miss
-
-                if (!hit) {
-                    store_misses++;
-                    cacheSim.cycle+= 100;
-                }
-                // if tag hit
-                else {
-                    location = itr->second->id;
-                    store_hits++;
-                    cacheSim.cycle+= 100;
-                    cacheSim.sets.at(index).slots.at(location).access_ts = cacheSim.cycle;
-                }
-            }
+            
         }
         
 

@@ -10,7 +10,6 @@
         bool valid;
         bool dirty;
         uint32_t load_ts, access_ts;
-        uint32_t id;
     };
 
     struct Set {
@@ -22,6 +21,7 @@
     struct Cache{
         std::vector<Set> sets;
         uint32_t cycle; // Timer
+        uint32_t counter; //counter
     };
 
     // Create an empty cache and initalize it with empty values
